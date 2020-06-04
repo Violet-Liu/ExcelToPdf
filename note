@@ -1,0 +1,42 @@
+Workbook workbook = new Workbook();
+            workbook.LoadFromFile(@"Daily_56_2020-01-11.xlsx");
+
+            workbook.ConverterSetting.SheetFitToPage = true;
+
+            workbook.SaveToFile(@"测试v1.0.pdf", FileFormat.PDF);
+
+            workbook.LoadFromFile(@"Daily_56_2020-01-11.xlsx");
+
+            workbook.ConverterSetting.SheetFitToPage = true;
+
+            workbook.SaveToFile(@"测试v2.0.pdf", FileFormat.PDF);
+
+            PdfReader reader = null;
+            iTextSharp.text.Document document = new iTextSharp.text.Document();
+            PdfImportedPage page = null;
+            PdfCopy pdfCpy = null;
+            int n = 0;
+            reader = new PdfReader(@"测试v1.0.pdf");
+            reader.ConsolidateNamedDestinations();
+            n = reader.NumberOfPages;
+            document = new iTextSharp.text.Document(reader.GetPageSizeWithRotation(1));
+            pdfCpy = new PdfCopy(document, new FileStream(@"测试v3.0.pdf", FileMode.Create));
+            document.Open();
+            for (int j = 1; j <= n ; j++)
+            {
+                page = pdfCpy.GetImportedPage(reader, j);
+                pdfCpy.AddPage(page);
+            }
+
+            reader = new PdfReader(@"测试v2.0.pdf");
+            reader.ConsolidateNamedDestinations();
+            n = reader.NumberOfPages;
+            for (int j = 1; j <= n; j++)
+            {
+                page = pdfCpy.GetImportedPage(reader, j);
+                pdfCpy.AddPage(page);
+            }
+
+
+            reader.Close();
+            document.Close();
